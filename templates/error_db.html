@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Kesalahan Database{% endblock %}
+
+{% block content %}
+    <div style="text-align: center; padding: 50px;">
+        <h2 style="color: #dc3545;">Terjadi Kesalahan Koneksi Database!</h2>
+        <p>Maaf, aplikasi tidak dapat terhubung ke database saat ini.</p>
+        <p>{{ message }}</p>
+        <p>Silakan coba beberapa saat lagi atau hubungi administrator.</p>
+        <a href="{{ url_for('slip_gaji') }}" class="button primary" style="margin-top: 20px;">Kembali ke Halaman Utama</a>
+    </div>
+{% endblock %}

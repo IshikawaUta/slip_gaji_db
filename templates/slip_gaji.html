@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Slip Gaji Harian{% endblock %}
+
+{% block content %}
+    <h2>Slip Gaji Harian</h2>
+    <a href="{{ url_for('add_karyawan') }}" class="button primary" style="margin-bottom: 15px;">Tambah Karyawan Baru</a>
+
+    {% if all_karyawan %}
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="select_karyawan">Pilih Karyawan:</label>
+            <select id="select_karyawan" onchange="location = this.value;">
+                {% for k in all_karyawan %}
+                    <option value="{{ url_for('slip_gaji', karyawan_id=k._id) }}" {# Akses _id #}
+                            {% if karyawan and k._id == karyawan._id %}selected{% endif %}> {# Bandingkan _id #}
+                        {{ k.nama }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% if karyawan %}
+                <a href="{{ url_for('edit_karyawan', karyawan_id=karyawan._id) }}" class="button secondary" style="margin-left: 10px;">Edit Karyawan</a>
+            {% endif %}
+        </div>
+
+        {% if karyawan %}
+            <p><strong>Nama Karyawan:</strong> {{ karyawan.nama }}</p>
+            <p><strong>No Rek:</strong> {{ karyawan.no_rek }}</p>
+            <p><strong>Slip Gaji Harian:</strong> {{ karyawan.periode }}</p>
+
+            <a href="{{ url_for('add_absensi', karyawan_id=karyawan._id) }}" class="button primary">Tambah Absensi Baru</a>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Status</th>
+                        <th>Gaji Harian</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in absensi_gaji %}
+                    <tr {% if item.status == 'OFF' %}class="off"{% elif 'CUTI' in item.status %}class="cuti"{% endif %}>
+                        <td data-label="Tanggal">{{ item.tanggal.strftime('%d %B %Y') }}</td> {# Akses item.tanggal #}
+                        <td data-label="Status">{{ item.status }}</td> {# Akses item.status #}
+                        <td data-label="Gaji Harian">{% if item.gaji_harian %}Rp{{ "{:,.0f}".format(item.gaji_harian) }}{% else %}-{% endif %}</td> {# Akses item.gaji_harian #}
+                        <td data-label="Aksi">
+                            <a href="{{ url_for('edit_absensi', absensi_id=item._id) }}" class="button success">Edit</a> {# Akses item._id #}
+                            <form action="{{ url_for('delete_absensi', absensi_id=item._id) }}" method="POST" style="display:inline;"> {# Akses item._id #}
+                                <button type="submit" class="button danger" onclick="return confirm('Apakah Anda yakin ingin menghapus absensi ini?');">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3" class="total" data-label="Total"><strong>TOTAL</strong></td>
+                        <td class="total" data-label="Jumlah"><strong>Rp{{ "{:,.0f}".format(total_gaji) }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <p>Pilih karyawan dari daftar di atas untuk melihat slip gajinya.</p>
+        {% endif %}
+    {% else %}
+        <p>Tidak ada data karyawan yang ditampilkan. Silakan tambahkan karyawan terlebih dahulu.</p>
+    {% endif %}
+{% endblock %}

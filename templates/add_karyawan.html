@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Tambah Karyawan Baru{% endblock %}
+
+{% block content %}
+    <h2>Tambah Karyawan Baru</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="nama">Nama Karyawan:</label>
+            <input type="text" id="nama" name="nama" required value="{{ form_data.nama or '' }}"> {# Akses form_data.nama #}
+        </div>
+        <div class="form-group">
+            <label for="no_rek">No Rekening:</label>
+            <input type="text" id="no_rek" name="no_rek" required value="{{ form_data.no_rek or '' }}"> {# Akses form_data.no_rek #}
+        </div>
+        <div class="form-group">
+            <label for="periode">Periode Gaji (contoh: 01-16 Mei 2025):</label>
+            <input type="text" id="periode" name="periode" required value="{{ form_data.periode or '' }}"> {# Akses form_data.periode #}
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="button primary">Tambah Karyawan</button>
+            <a href="{{ url_for('slip_gaji') }}" class="button">Batal</a>
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Absensi{% endblock %}
+
+{% block content %}
+    <h2>Edit Absensi untuk {{ karyawan.nama }}</h2> {# Akses karyawan.nama #}
+    <form method="POST">
+        <div class="form-group">
+            <label for="tanggal">Tanggal:</label>
+            {# absensi.tanggal adalah objek datetime, perlu diformat #}
+            <input type="date" id="tanggal" name="tanggal" value="{{ absensi.tanggal.strftime('%Y-%m-%d') }}" required>
+        </div>
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select id="status" name="status" onchange="toggleGajiHarian()">
+                <option value="Hadir" {% if absensi.status == 'Hadir' %}selected{% endif %}>Hadir</option>
+                <option value="OFF" {% if absensi.status == 'OFF' %}selected{% endif %}>OFF</option>
+                <option value="CUTI HARI BURUH" {% if absensi.status == 'CUTI HARI BURUH' %}selected{% endif %}>CUTI HARI BURUH</option>
+                <option value="CUTI WAISAK" {% if absensi.status == 'CUTI WAISAK' %}selected{% endif %}>CUTI WAISAK</option>
+                <option value="Sakit" {% if absensi.status == 'Sakit' %}selected{% endif %}>Sakit</option>
+                <option value="Izin" {% if absensi.status == 'Izin' %}selected{% endif %}>Izin</option>
+            </select>
+        </div>
+        <div class="form-group" id="gaji_harian_group">
+            <label for="gaji_harian">Gaji Harian (Rp):</label>
+            {# absensi.gaji_harian bisa None, jadi cek dulu #}
+            <input type="number" id="gaji_harian" name="gaji_harian" value="{% if absensi.gaji_harian %}{{ absensi.gaji_harian }}{% endif %}">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="button primary">Perbarui Absensi</button>
+            <a href="{{ url_for('slip_gaji', karyawan_id=karyawan._id) }}" class="button">Batal</a> {# Akses karyawan._id #}
+        </div>
+    </form>
+
+    <script>
+        // Fungsi untuk menyembunyikan/menampilkan input gaji harian berdasarkan status
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleGajiHarian(); // Panggil saat halaman dimuat untuk menyesuaikan input gaji
+        });
+
+        function toggleGajiHarian() {
+            const status = document.getElementById('status').value;
+            const gajiHarianGroup = document.getElementById('gaji_harian_group');
+            if (status === 'Hadir') {
+                gajiHarianGroup.style.display = 'block';
+                document.getElementById('gaji_harian').setAttribute('required', 'required');
+            } else {
+                gajiHarianGroup.style.display = 'none';
+                document.getElementById('gaji_harian').removeAttribute('required');
+                // Tidak mengosongkan nilai saat disembunyikan agar nilai asli tetap ada jika pengguna beralih kembali
+            }
+        }
+    </script>
+{% endblock %}

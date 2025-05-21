@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Tambah Absensi Baru{% endblock %}
+
+{% block content %}
+    <h2>Tambah Absensi Baru untuk {{ karyawan.nama }}</h2> {# Akses karyawan.nama #}
+    <form method="POST">
+        <div class="form-group">
+            <label for="tanggal">Tanggal:</label>
+            <input type="date" id="tanggal" name="tanggal" required>
+        </div>
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select id="status" name="status" onchange="toggleGajiHarian()">
+                <option value="Hadir">Hadir</option>
+                <option value="OFF">OFF</option>
+                <option value="CUTI HARI BURUH">CUTI HARI BURUH</option>
+                <option value="CUTI WAISAK">CUTI WAISAK</option>
+                <option value="Sakit">Sakit</option>
+                <option value="Izin">Izin</option>
+            </select>
+        </div>
+        <div class="form-group" id="gaji_harian_group">
+            <label for="gaji_harian">Gaji Harian (Rp):</label>
+            <input type="number" id="gaji_harian" name="gaji_harian" value="70000">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="button primary">Tambah Absensi</button>
+            <a href="{{ url_for('slip_gaji', karyawan_id=karyawan._id) }}" class="button">Batal</a> {# Akses karyawan._id #}
+        </div>
+    </form>
+
+    <script>
+        // Fungsi untuk mengatur nilai default tanggal ke hari ini
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById('tanggal').value = `${year}-${month}-${day}`;
+
+            // Panggil toggleGajiHarian saat halaman dimuat untuk menyesuaikan input gaji
+            toggleGajiHarian();
+        });
+
+        // Fungsi untuk menyembunyikan/menampilkan input gaji harian berdasarkan status
+        function toggleGajiHarian() {
+            const status = document.getElementById('status').value;
+            const gajiHarianGroup = document.getElementById('gaji_harian_group');
+            if (status === 'Hadir') {
+                gajiHarianGroup.style.display = 'block';
+                document.getElementById('gaji_harian').setAttribute('required', 'required');
+            } else {
+                gajiHarianGroup.style.display = 'none';
+                document.getElementById('gaji_harian').removeAttribute('required');
+                document.getElementById('gaji_harian').value = ''; // Kosongkan nilai saat disembunyikan
+            }
+        }
+    </script>
+{% endblock %}
