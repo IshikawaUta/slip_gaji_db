@@ -13,9 +13,9 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Buat direktori 'instance' jika belum ada
-if not os.path.exists(app.instance_path):
-    os.makedirs(app.instance_path)
+# --- Hapus baris ini: os.makedirs(app.instance_path) ---
+# Lingkungan Vercel bersifat read-only, jadi tidak bisa membuat direktori di sini.
+# Konfigurasi dan data akan diakses melalui variabel lingkungan dan MongoDB Atlas.
 
 # Konfigurasi MongoDB - Sekarang diambil dari variabel lingkungan
 mongo_uri = os.environ.get("MONGO_URI")
