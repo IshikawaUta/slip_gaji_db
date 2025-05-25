@@ -7,6 +7,8 @@ import click
 from flask.cli import with_appcontext
 from dotenv import load_dotenv
 from pymongo import MongoClient # Import MongoClient secara langsung
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask import session
 
 # Muat variabel lingkungan dari file .env
 load_dotenv()
@@ -57,6 +59,52 @@ def get_mongo_db():
             g.pymongo_db_obj = None # Set ke None jika koneksi gagal
     return g.pymongo_db_obj
 
+# Informasi Admin (Sebaiknya diambil dari database pada aplikasi yang lebih kompleks)
+ADMINS = {
+    'admin': generate_password_hash('ekasaputra09') # Ganti 'passwordadmin' dengan kata sandi yang kuat
+}
+
+# Fungsi untuk memeriksa apakah pengguna adalah admin
+def is_admin_logged_in():
+    return 'admin_logged_in' in session and session['admin_logged_in']
+
+# Dekorator untuk melindungi rute admin
+def admin_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not is_admin_logged_in():
+            flash('Anda harus login sebagai admin untuk mengakses halaman ini.', 'danger')
+            return redirect(url_for('login_admin'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Rute Login Admin
+@app.route('/admin/login', methods=['GET', 'POST'])
+def login_admin():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if username in ADMINS and check_password_hash(ADMINS[username], password):
+            session['admin_logged_in'] = True
+            flash('Login admin berhasil!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Login gagal. Username atau password salah.', 'danger')
+    return render_template('login_admin.html')
+
+# Rute Logout Admin
+@app.route('/admin/logout')
+def logout_admin():
+    session.pop('admin_logged_in', None)
+    flash('Anda telah logout dari admin.', 'info')
+    return redirect(url_for('login_admin'))
+
+# Contoh Rute Dashboard Admin (Dilindungi)
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
 
 @app.route('/', defaults={'karyawan_id': None})
 @app.route('/slip_gaji/<karyawan_id>')
@@ -105,6 +153,7 @@ def slip_gaji(karyawan_id):
 
 # --- Fitur Tambah Karyawan ---
 @app.route('/add_karyawan', methods=['GET', 'POST'])
+@admin_required
 def add_karyawan():
     db_obj = get_mongo_db()
     if db_obj is None:
@@ -142,6 +191,7 @@ def add_karyawan():
 
 # --- Fitur Edit Karyawan ---
 @app.route('/edit_karyawan/<karyawan_id>', methods=['GET', 'POST'])
+@admin_required
 def edit_karyawan(karyawan_id):
     db_obj = get_mongo_db()
     if db_obj is None:
@@ -190,6 +240,7 @@ def edit_karyawan(karyawan_id):
 
 # --- Fitur Tambah Absensi ---
 @app.route('/add_absensi/<karyawan_id>', methods=['GET', 'POST'])
+@admin_required
 def add_absensi(karyawan_id):
     db_obj = get_mongo_db()
     if db_obj is None:
@@ -240,6 +291,7 @@ def add_absensi(karyawan_id):
 
 # --- Fitur Edit Absensi ---
 @app.route('/edit_absensi/<absensi_id>', methods=['GET', 'POST'])
+@admin_required
 def edit_absensi(absensi_id):
     db_obj = get_mongo_db()
     if db_obj is None:
@@ -299,6 +351,7 @@ def edit_absensi(absensi_id):
 
 # --- Fitur Hapus Absensi ---
 @app.route('/delete_absensi/<absensi_id>', methods=['POST'])
+@admin_required
 def delete_absensi(absensi_id):
     db_obj = get_mongo_db()
     if db_obj is None:

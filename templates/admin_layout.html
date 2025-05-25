@@ -1,0 +1,176 @@
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Apply Montserrat font to the entire body */
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background: #343a40; /* Dark background */
+            color: #fff;
+            transition: all 0.3s ease-in-out;
+            z-index: 1000; /* Ensure it's above other content */
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+        }
+
+        #sidebar.active {
+            left: -250px;
+        }
+
+        #sidebar .sidebar-header {
+            padding: 20px;
+            background: #212529; /* Darker background for header */
+            display: flex;
+            justify-content: center; /* Center the logo/title */
+            align-items: center;
+        }
+
+        #sidebar .sidebar-header h3 {
+            color: #fff;
+            margin: 0;
+            font-size: 1.5em; /* Slightly larger font */
+            font-weight: bold; /* Make it bold */
+        }
+
+        #sidebar .sidebar-header h3 i {
+            margin-right: 10px;
+        }
+
+        #sidebar .list-unstyled {
+            padding: 0;
+        }
+
+        #sidebar .list-unstyled li a {
+            display: block;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #f8f9fa; /* Light text */
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        #sidebar .list-unstyled li a i {
+            margin-right: 15px; /* More spacing for icons */
+            font-size: 1.1em; /* Slightly larger icons */
+        }
+
+        #sidebar .list-unstyled li a:hover {
+            background: #495057; /* Slightly lighter on hover */
+        }
+
+        #sidebar .list-unstyled li.active a {
+            background: #007bff; /* Primary color for active link */
+            color: #fff;
+            border-left: 5px solid #fff; /* Add a visual indicator for active link */
+        }
+
+        /* Content Styling */
+        body {
+            padding-left: 250px; /* Make space for the fixed sidebar */
+            background-color: #f4f5f7; /* Light background for content */
+        }
+
+        body.active {
+            padding-left: 0;
+        }
+
+        #content {
+            padding: 20px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        #content h1 {
+            color: #333; /* Darker heading text */
+            margin-bottom: 20px;
+        }
+
+        /* Toggle Button Styling */
+        .toggle-button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-button:hover {
+            background-color: #0056b3;
+        }
+
+        .toggle-button i {
+            margin-right: 5px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #sidebar {
+                left: -250px;
+            }
+            #sidebar.active {
+                left: 0;
+            }
+            body {
+                padding-left: 0;
+            }
+            body.active {
+                padding-left: 250px;
+            }
+            .toggle-button {
+                margin-left: 10px; /* Adjust button position on smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-tools"></i> Admin Panel</h3>
+        </div>
+        <ul class="list-unstyled components">
+            <li class="active">
+                <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+            <li>
+                <a href="{{ url_for('slip_gaji') }}"><i class="fas fa-users"></i> Manajemen Karyawan</a>
+            </li>
+            <li>
+                <a href="{{ url_for('logout_admin') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="content">
+        <button type="button" id="sidebarCollapse" class="toggle-button">
+            <i class="fas fa-bars"></i> <span>Toggle Sidebar</span>
+        </button>
+        <h1>Selamat Datang di Admin Panel</h1>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const toggleButton = document.getElementById('sidebarCollapse'); // Get the button by its ID
+
+            toggleButton.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+                content.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
